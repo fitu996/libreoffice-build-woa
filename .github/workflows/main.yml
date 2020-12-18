@@ -1,0 +1,111 @@
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  pull_request:
+    branches-ignore:
+      - pr_ignore_ci
+  push:
+    branches:    
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - run: mountvol.exe
+      # name: Show disk usage
+      - run: bash -c "df -lh"
+      # name: Check out this repo
+      - uses: actions/checkout@v2
+      # name: Show current status
+      - run: git log -3
+      # name: Setup java for local host
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+      # name: Download java for target host
+      - run: Invoke-WebRequest https://github.com/microsoft/openjdk-aarch64/releases/download/16-ea%2B19/jdk-16-ea+19-windows-aarch64.zip -OutFile D:\jdk-aarch64.zip
+      # name: Extract java for target host
+      - run: Expand-Archive -LiteralPath D:\jdk-aarch64.zip -DestinationPath D:\jdk-aarch64 -Force
+      # name: Install Cygwin
+      - run: choco install cygwin --params "/InstallDir:D:\cyg /NoStartMenu /NoAdmin"
+      # name: Install cyg-get
+      - run: choco install cyg-get
+      # name: Add required packages to Cygwin
+      - run: cyg-get autoconf automake bison cabextract doxygen flex gcc-g++ gettext-devel git gnupg gperf make mintty nasm openssh openssl patch perl python python3 pkg-config rsync unzip vim wget zip perl-Archive-Zip perl-Font-TTF perl-IO-String
+      - name: Setup other 3rd party tools
+        shell: D:\cyg\bin\bash.exe --login -e -x {0}
+        run: |
+          mkdir -p /opt/lo/bin && : 
+          wget -P /opt/lo/bin --tries=5 --retry-connrefused --retry-on-http-error=503,429,404 https://dev-www.libreoffice.org/bin/cygwin/make-4.2.1-msvc.exe && : 
+          cp /opt/lo/bin/make-4.2.1-msvc.exe /opt/lo/bin/make && : 
+          chmod +x /opt/lo/bin/make && : 
+      # name: Show disk usage
+      - run: bash -c "df -lh"
+      # name: Mount D:\ to C:\d\
+      - shell: bash
+        run: mkdir /c/d && mountvol.exe C:\\d \\\\?\\$(mountvol.exe | grep -A 1 -F '\\?\Volume{' | grep -B 1 -F 'D:\' | head -n 1 | cut -d '\' -f 4)\\
+      # name: Check mounts
+      - run: mountvol.exe
+      # name: Show disk usage
+      - run: bash -c "df -lh"
+      - name: Clone LibreOffice source code repositories
+        shell: D:\cyg\bin\bash.exe --login -e -x {0}
+        run: |
+          mkdir /cygdrive/d/libo && : 
+          cd /cygdrive/c/d/libo && : 
+          git clone --depth=1 --branch=libreoffice-7-1 --recursive --shallow-submodules https://github.com/LibreOffice/core.git core && : 
+          cd core && : 
+          git log -3 && : 
+      # name: Show disk usage
+      - run: bash -c "df -lh"
+      - name: Configure help
+        shell: D:\cyg\bin\bash.exe --login -e -x {0}
+        run: |
+          mkdir -p /cygdrive/c/libo/build && : 
+          cd /cygdrive/c/libo/build && : 
+          /cygdrive/c/d/libo/core/autogen.sh --help && : 
+      - name: Configure
+        shell: D:\cyg\bin\bash.exe --login -e -x {0}
+        run: |
+          cd /cygdrive/c/libo/build && : 
+          /cygdrive/c/d/libo/core/autogen.sh --host=aarch64-pc-cygwin --enable-release-build --enable-mergelibs --with-lang=ALL --disable-online-update --without-junit --enable-option-checking=fatal --disable-dependency-tracking --disable-ccache --with-package-format=archive "--with-build-platform-configure-options=--with-jdk-home=$JAVA_HOME" "--with-jdk-home=$(echo /cygdrive/d/jdk-aarch64/*)" && : 
+      # name: Show disk usage
+      - run: bash -c "df -lh"
+      - name: Make help
+        shell: D:\cyg\bin\bash.exe --login -e -x {0}
+        run: |
+          cd /cygdrive/c/libo/build && : 
+          /opt/lo/bin/make help && : 
+      - name: Make
+        shell: D:\cyg\bin\bash.exe --login -e -x {0}
+        run: |
+          cd /cygdrive/c/libo/build && : 
+          /opt/lo/bin/make -j$(nproc) || /opt/lo/bin/make -j$(nproc) || /opt/lo/bin/make || /opt/lo/bin/make || /opt/lo/bin/make -j1 && : 
+      - run: tree /f /a C:\libo\build
+      # name: Show disk usage
+      - run: bash -c "df -lh"
+      - run: mv C:\libo\build\instdir\sdk C:\libo\sdk
+      - run: 7z a -m0=lzma2 -mx -myx C:\instdir.7z C:\libo\build\instdir
+      # name: Show disk usage
+      - run: bash -c "du -hd 0 /c/instdir.7z"
+      - uses: actions/upload-artifact@v2
+        with:
+          name: instdir.7z
+          path: C:\instdir.7z
+      - run: rm C:\instdir.7z
+      - run: 7z a -m0=lzma2 -mx -myx C:\sdk.7z C:\libo\sdk
+      # name: Show disk usage
+      - run: bash -c "du -hd 0 /c/sdk.7z"
+      - uses: actions/upload-artifact@v2
+        with:
+          name: sdk.7z
+          path: C:\sdk.7z
+      - run: rm C:\sdk.7z
+      - run: 7z a -m0=lzma2 -mx -myx C:\instdir_for_build.7z C:\libo\build\instdir_for_build
+      # name: Show disk usage
+      - run: bash -c "du -hd 0 /c/instdir_for_build.7z"
+      - uses: actions/upload-artifact@v2
+        with:
+          name: instdir_for_build.7z
+          path: C:\instdir_for_build.7z
