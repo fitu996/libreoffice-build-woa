@@ -81,7 +81,7 @@ jobs:
         shell: D:\cyg\bin\bash.exe --login -e -x {0}
         run: |
           cd /cygdrive/c/libo/build && : 
-          /opt/lo/bin/make -j$(nproc) || /opt/lo/bin/make -j$(nproc) || /opt/lo/bin/make || /opt/lo/bin/make || ( touch workdir/Package/postgresql.filelist && /opt/lo/bin/make -j1 ) && : 
+          /opt/lo/bin/make -j$(nproc) || ( touch workdir/Package/postgresql.filelist && /opt/lo/bin/make -j$(nproc) ) || /opt/lo/bin/make || /opt/lo/bin/make || ( touch workdir/Package/postgresql.filelist && /opt/lo/bin/make -j1 ) && : 
       - run: tree /f /a C:\libo\build
       # name: Show disk usage
       - run: bash -c "df -lh"
