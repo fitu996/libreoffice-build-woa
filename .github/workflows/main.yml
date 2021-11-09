@@ -67,7 +67,7 @@ jobs:
         shell: D:\cyg\bin\bash.exe --login -e -x {0}
         run: |
           cd /cygdrive/c/libo/build && : 
-          /cygdrive/c/d/libo/core/autogen.sh --host=aarch64-pc-cygwin --enable-release-build --enable-mergelibs --with-lang=ALL --enable-python=no --disable-cve-tests --disable-online-update --without-junit --enable-option-checking=fatal --disable-dependency-tracking --disable-ccache --enable-optimized=yes --disable-debug --disable-dbgutil --with-package-format=archive "--with-build-platform-configure-options=--with-jdk-home=$JAVA_HOME" "--with-jdk-home=$(echo /cygdrive/d/jdk-aarch64/*)" && : 
+          /cygdrive/c/d/libo/core/autogen.sh --host=aarch64-pc-cygwin --enable-release-build --enable-mergelibs --with-lang=ALL --enable-python=no --disable-postgresql-sdbc --disable-cve-tests --disable-online-update --without-junit --enable-option-checking=fatal --disable-dependency-tracking --disable-ccache --enable-optimized=yes --disable-debug --disable-dbgutil --with-package-format=archive "--with-build-platform-configure-options=--with-jdk-home=$JAVA_HOME" "--with-jdk-home=$(echo /cygdrive/d/jdk-aarch64/*)" && : 
       # name: Show disk usage
       - run: bash -c "df -lh"
       - name: Make help
