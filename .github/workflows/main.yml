@@ -52,7 +52,7 @@ jobs:
         run: |
           mkdir /cygdrive/c/d/libo && : 
           cd /cygdrive/c/d/libo && : 
-          git clone --depth=1 --branch=libreoffice-7-1-5 --recursive --shallow-submodules https://github.com/LibreOffice/core.git core && : 
+          git clone --depth=1 --branch=libreoffice-7-1-6 --recursive --shallow-submodules https://github.com/LibreOffice/core.git core && : 
           cd core && : 
           git log -3 && : 
       # name: Show disk usage
