@@ -50,7 +50,7 @@ jobs:
       - name: Clone LibreOffice source code repositories
         shell: D:\cyg\bin\bash.exe --login -e -x {0}
         run: |
-          mkdir /cygdrive/d/libo && : 
+          mkdir /cygdrive/c/d/libo && : 
           cd /cygdrive/c/d/libo && : 
           git clone --depth=1 --branch=libreoffice-7-2-3 --recursive --shallow-submodules https://github.com/LibreOffice/core.git core && : 
           cd core && : 
