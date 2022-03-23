@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
       - run: mountvol.exe
       # name: Show disk usage
@@ -18,11 +18,14 @@ jobs:
       # name: Show current status
       - run: git log -3
       # name: Setup java for local host
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v3.0.0
         with:
-          java-version: '11'
+          java-version: '17'
+          distribution: 'microsoft'
+      # name: Setup visual studio
+      - uses: microsoft/setup-msbuild@v1.1
       # name: Download java for target host
-      - run: Invoke-WebRequest https://github.com/microsoft/openjdk-aarch64/releases/download/16-ea%2B19/jdk-16-ea+19-windows-aarch64.zip -OutFile D:\jdk-aarch64.zip
+      - run: Invoke-WebRequest https://aka.ms/download-jdk/microsoft-jdk-17.0.2.8.1-windows-aarch64.zip -OutFile D:\jdk-aarch64.zip
       # name: Extract java for target host
       - run: Expand-Archive -LiteralPath D:\jdk-aarch64.zip -DestinationPath D:\jdk-aarch64 -Force
       # name: Install Cygwin
@@ -50,9 +53,9 @@ jobs:
       - name: Clone LibreOffice source code repositories
         shell: D:\cyg\bin\bash.exe --login -e -x {0}
         run: |
-          mkdir /cygdrive/d/libo && : 
+          mkdir /cygdrive/c/d/libo && : 
           cd /cygdrive/c/d/libo && : 
-          git clone --depth=1 --branch=libreoffice-7-1-2 --recursive --shallow-submodules https://github.com/LibreOffice/core.git core && : 
+          git clone --depth=1 --branch=libreoffice-7-3-1 --recursive --shallow-submodules https://github.com/LibreOffice/core.git core && : 
           cd core && : 
           git log -3 && : 
       # name: Show disk usage
@@ -67,7 +70,7 @@ jobs:
         shell: D:\cyg\bin\bash.exe --login -e -x {0}
         run: |
           cd /cygdrive/c/libo/build && : 
-          /cygdrive/c/d/libo/core/autogen.sh --host=aarch64-pc-cygwin --enable-release-build --enable-mergelibs --with-lang=ALL --disable-postgresql-sdbc --disable-online-update --without-junit --enable-option-checking=fatal --disable-dependency-tracking --disable-ccache --with-package-format=archive "--with-build-platform-configure-options=--with-jdk-home=$JAVA_HOME" "--with-jdk-home=$(echo /cygdrive/d/jdk-aarch64/*)" && : 
+          /cygdrive/c/d/libo/core/autogen.sh --with-distro=LibreOfficeWinArm64 --enable-release-build --enable-mergelibs --enable-lto --enable-pch --with-lang=ALL --disable-postgresql-sdbc --disable-cve-tests --disable-online-update --without-junit --enable-option-checking=fatal --disable-dependency-tracking --disable-ccache --enable-optimized=yes --disable-debug --disable-dbgutil --with-package-format=archive "--with-build-platform-configure-options=--with-jdk-home=$JAVA_HOME" "--with-jdk-home=$(echo /cygdrive/d/jdk-aarch64/*)" && : 
       # name: Show disk usage
       - run: bash -c "df -lh"
       - name: Make help
