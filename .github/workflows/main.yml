@@ -22,7 +22,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'microsoft'
-          java-package: 'jdk+fx'
       # name: Setup visual studio
       - uses: microsoft/setup-msbuild@v1.1
       # name: Download java for target host
