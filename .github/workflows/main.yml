@@ -18,11 +18,11 @@ jobs:
       # name: Show current status
       - run: git log -3
       # name: Setup java for local host
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v3.0.0
         with:
           java-version: '17'
       # name: Setup visual studio
-      - uses: actions/setup-msbuild@v1
+      - uses: microsoft/setup-msbuild@v1.1
       # name: Download java for target host
       - run: Invoke-WebRequest https://aka.ms/download-jdk/microsoft-jdk-17.0.2.8.1-windows-aarch64.zip -OutFile D:\jdk-aarch64.zip
       # name: Extract java for target host
