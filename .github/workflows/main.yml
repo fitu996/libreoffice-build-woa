@@ -22,7 +22,7 @@ jobs:
         with:
           java-version: '17'
       # name: Download java for target host
-      - run: Invoke-WebRequest https://aka.ms/download-jdk/microsoft-jdk-17.0.1.12.1-windows-aarch64.zip -OutFile D:\jdk-aarch64.zip
+      - run: Invoke-WebRequest https://aka.ms/download-jdk/microsoft-jdk-17.0.2.8.1-windows-aarch64.zip -OutFile D:\jdk-aarch64.zip
       # name: Extract java for target host
       - run: Expand-Archive -LiteralPath D:\jdk-aarch64.zip -DestinationPath D:\jdk-aarch64 -Force
       # name: Install Cygwin
@@ -52,7 +52,7 @@ jobs:
         run: |
           mkdir /cygdrive/c/d/libo && : 
           cd /cygdrive/c/d/libo && : 
-          git clone --depth=1 --branch=libreoffice-7-1-6 --recursive --shallow-submodules https://github.com/LibreOffice/core.git core && : 
+          git clone --depth=1 --branch=libreoffice-7-2-6 --recursive --shallow-submodules https://github.com/LibreOffice/core.git core && : 
           cd core && : 
           git log -3 && : 
       # name: Show disk usage
