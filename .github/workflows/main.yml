@@ -21,6 +21,8 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '17'
+      # name: Setup visual studio
+      - uses: actions/setup-msbuild@v1
       # name: Download java for target host
       - run: Invoke-WebRequest https://aka.ms/download-jdk/microsoft-jdk-17.0.2.8.1-windows-aarch64.zip -OutFile D:\jdk-aarch64.zip
       # name: Extract java for target host
@@ -67,7 +69,7 @@ jobs:
         shell: D:\cyg\bin\bash.exe --login -e -x {0}
         run: |
           cd /cygdrive/c/libo/build && : 
-          /cygdrive/c/d/libo/core/autogen.sh --with-distro=LibreOfficeWinArm64 --enable-release-build --enable-mergelibs --with-lang=ALL --disable-postgresql-sdbc --disable-cve-tests --disable-online-update --without-junit --enable-option-checking=fatal --disable-dependency-tracking --disable-ccache --enable-optimized=yes --disable-debug --disable-dbgutil --with-package-format=archive "--with-build-platform-configure-options=--with-jdk-home=$JAVA_HOME" "--with-jdk-home=$(echo /cygdrive/d/jdk-aarch64/*)" && : 
+          /cygdrive/c/d/libo/core/autogen.sh --with-distro=LibreOfficeWinArm64 --enable-release-build --enable-mergelibs --enable-lto --enable-pch --with-lang=ALL --disable-postgresql-sdbc --disable-cve-tests --disable-online-update --without-junit --enable-option-checking=fatal --disable-dependency-tracking --disable-ccache --enable-optimized=yes --disable-debug --disable-dbgutil --with-package-format=archive "--with-build-platform-configure-options=--with-jdk-home=$JAVA_HOME" "--with-jdk-home=$(echo /cygdrive/d/jdk-aarch64/*)" && : 
       # name: Show disk usage
       - run: bash -c "df -lh"
       - name: Make help
